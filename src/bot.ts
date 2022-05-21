@@ -568,7 +568,7 @@ export class DiscordBot {
             // const link = `https://discord.com/channels/${chan.guild.id}/${chan.id}/${editEventId}`;
             // embedSet.messageEmbed.description = `[Edit](${link}): ${embedSet.messageEmbed.description}`;
             // await this.send(embedSet, opts, roomLookup, event);
-            await this.webhookEdit(embedSet, opts, roomLookup, editEventId);
+            await this.webhookEdit(embedSet, opts, roomLookup, editEventId, oldMsg);
         } catch (err) {
             // throw wrapError(err, Unstable.ForeignNetworkError, "Couldn't edit message");
             log.warn(`Failed to edit message ${event.event_id}`);
@@ -584,7 +584,8 @@ export class DiscordBot {
         embedSet: IMatrixEventProcessorResult,
         opts: Discord.MessageOptions,
         roomLookup: ChannelLookupResult,
-        id: string
+        id: string,
+        oldMsg: Discord.Message
     ): Promise<Discord.Message | null | (Discord.Message | null)[]> {
         let msg: Discord.Message | null | (Discord.Message | null)[] = null;
         let hook: Discord.Webhook | undefined;
@@ -605,27 +606,21 @@ export class DiscordBot {
         } catch (err) {
             // throw wrapError(err, Unstable.ForeignNetworkError, "Unable to create \"_matrix\" webhook");
             log.warn("Unable to create _matrix webook:", err);
+            return null;
         }
         try {
             this.channelLock.set(chan.id);
             const embeds = this.prepareEmbedSetWebhook(embedSet);
             const embed = embedSet.messageEmbed;
-            let apiMessage;
-
             const content = embed.description;
-            // @ts-ignore Webhook wierdness.
-            apiMessage = Discord.APIMessage.create(hook, content, {...opts, embeds}).resolveData();
-        
-            const { data, files } = await apiMessage.resolveFiles();
-            
-            // @ts-ignore this.bot.api is private.
-            msg = await this.bot.api.webhooks(hook.id, hook.token, "messages", id)
-            .patch({
-                data,
-                files,
-                query: { wait: true },
-                auth: false,
-            });
+            msg = await hook.editMessage(
+                oldMsg,
+                content,
+                {
+                    ...opts,
+                    embeds
+                }
+            )
         } catch (err) {
             // throw wrapError(err, Unstable.ForeignNetworkError, "Couldn't send message");
             log.warn(`Failed to edit message ${id}`);
