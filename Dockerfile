@@ -1,10 +1,15 @@
 FROM node:14-alpine AS BUILD
-COPY . /tmp/src
+COPY ./package.json /tmp/src/package.json
+COPY ./yarn.lock /tmp/src/yarn.lock
 # install some dependencies needed for the build process
 RUN apk add --no-cache -t build-deps make gcc g++ python3 ca-certificates libc-dev wget git
 RUN cd /tmp/src \
     && git config --global url.https://github.com/.insteadOf git://github.com/ \
     && yarn
+
+COPY . /tmp/src
+
+RUN yarn build
 
 FROM node:14-alpine
 ENV NODE_ENV=production

@@ -8,7 +8,6 @@
     "lint": "eslint -c .eslintrc --max-warnings 200 src/**/*.ts test/**/*.ts",
     "coverage": "tsc && nyc mocha build/test/config.js build/test",
     "build": "tsc",
-    "postinstall": "npm run build",
     "start": "npm run-script build && node ./build/src/discordas.js -c config.yaml",
     "debug": "npm run-script build && node --inspect ./build/src/discordas.js -c config.yaml",
     "addbot": "node ./build/tools/addbot.js",
