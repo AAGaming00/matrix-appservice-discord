@@ -45,6 +45,11 @@ const DEFAULT_GUILD_STATE = {
     roles: [],
 };
 
+const IMAGE_OPTS = {
+    format: "webp",
+    size: 1024
+};
+
 export interface IUserState {
     avatarId: string;
     avatarUrl: string | null;
@@ -263,7 +268,7 @@ export class UserSyncroniser {
             userState.createUser = true;
             userState.displayName = displayName;
             if (discordUser.avatar) {
-                userState.avatarUrl = discordUser.displayAvatarURL();
+                userState.avatarUrl = discordUser.displayAvatarURL(IMAGE_OPTS);
                 userState.avatarId = discordUser.avatar;
             }
             return userState;
@@ -276,10 +281,10 @@ export class UserSyncroniser {
         }
 
         const oldAvatarUrl = remoteUser.avatarurl;
-        if (oldAvatarUrl !== discordUser.displayAvatarURL()) {
+        if (oldAvatarUrl !== discordUser.displayAvatarURL(IMAGE_OPTS)) {
             log.verbose(`User ${discordUser.id} avatarurl should be updated`);
             if (discordUser.avatar) {
-                userState.avatarUrl = discordUser.displayAvatarURL();
+                userState.avatarUrl = discordUser.displayAvatarURL(IMAGE_OPTS);
                 userState.avatarId = discordUser.avatar;
             } else {
                 userState.removeAvatar = true;
@@ -313,7 +318,7 @@ export class UserSyncroniser {
             username: newMember.user.tag,
         });
         if (newMember.avatar) {
-            guildState.avatarUrl = newMember.displayAvatarURL();
+            guildState.avatarUrl = newMember.displayAvatarURL(IMAGE_OPTS);
             guildState.avatarId = newMember.avatar;
 
             if (oldMember && oldMember?.avatar !== newMember.avatar) {
