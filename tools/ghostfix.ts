@@ -20,6 +20,7 @@ import { Log } from "../src/log";
 import { Util } from "../src/util";
 import { DiscordBot } from "../src/bot";
 import { ToolsHelper } from "./toolshelper";
+import { GuildMember } from "better-discord.js";
 
 const log = new Log("GhostFix");
 
@@ -95,7 +96,7 @@ async function run() {
                     let currentSchedule = JOIN_ROOM_SCHEDULE[0];
                     const doJoin = async () => {
                         await Util.DelayedPromise(currentSchedule);
-                        await discordbot.UserSyncroniser.OnUpdateGuildMember(null, member, true, false);
+                        await discordbot.UserSyncroniser.OnUpdateGuildMember({ avatar: "FAKE" } as GuildMember, member, true, false);
                     };
                     const errorHandler = async (err) => {
                         log.error(`Error joining rooms for ${member.id}`);
