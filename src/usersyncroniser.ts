@@ -318,22 +318,21 @@ export class UserSyncroniser {
             username: newMember.user.tag,
         });
         if (newMember.avatar) {
-            guildState.avatarUrl = newMember.displayAvatarURL(IMAGE_OPTS);
+            guildState.avatarUrl = newMember.avatarURL(IMAGE_OPTS);
             guildState.avatarId = newMember.avatar;
-
-            if (oldMember && oldMember?.avatar !== newMember.avatar) {
-                log.verbose(`Updating avatar_url for ${guildState.mxUserId} in guild ${newMember.guild.id} to "${guildState.avatarUrl}"`);
-                const data = await Util.DownloadFile(guildState.avatarUrl);
-                const intent = this.bridge.getIntentForUserId(guildState.mxUserId);
-                const avatarMxc = await intent.underlyingClient.uploadContent(
-                    data.buffer,
-                    data.mimeType,
-                    guildState.avatarId,
-                );
-                guildState.avatarurlMxc = avatarMxc;
+            if (guildState.avatarUrl) {
+                if (oldMember && oldMember?.avatar !== newMember.avatar) {
+                    log.verbose(`Updating avatar_url for ${guildState.mxUserId} in guild ${newMember.guild.id} to "${guildState.avatarUrl}"`);
+                    const data = await Util.DownloadFile(guildState.avatarUrl);
+                    const intent = this.bridge.getIntentForUserId(guildState.mxUserId);
+                    const avatarMxc = await intent.underlyingClient.uploadContent(
+                        data.buffer,
+                        data.mimeType,
+                        guildState.avatarId,
+                    );
+                    guildState.avatarurlMxc = avatarMxc;
+                }
             }
-
-
         }
         return guildState;
     }
