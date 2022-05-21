@@ -36,6 +36,9 @@ const DEFAULT_USER_STATE = {
 };
 
 const DEFAULT_GUILD_STATE = {
+    avatarId: null,
+    avatarUrl: null,
+    avatarurlMxc: null,
     displayName: "",
     id: null,
     mxUserId: null,
@@ -59,6 +62,9 @@ export interface IGuildMemberRole {
 }
 
 export interface IGuildMemberState {
+    avatarId: string | null;
+    avatarUrl: string | null;
+    avatarurlMxc: string | null;
     bot: boolean;
     displayColor?: number;
     displayName: string;
@@ -202,7 +208,7 @@ export class UserSyncroniser {
         const remoteUser = await this.userStore.getRemoteUser(memberState.id);
         let avatar = "";
         if (remoteUser) {
-            avatar = remoteUser.avatarurlMxc || "";
+            avatar = memberState.avatarurlMxc || remoteUser.avatarurlMxc || "";
         } else {
             log.warn("Remote user wasn't found, using blank avatar");
         }
@@ -257,7 +263,7 @@ export class UserSyncroniser {
             userState.createUser = true;
             userState.displayName = displayName;
             if (discordUser.avatar) {
-                userState.avatarUrl = discordUser.avatarURL();
+                userState.avatarUrl = discordUser.displayAvatarURL();
                 userState.avatarId = discordUser.avatar;
             }
             return userState;
@@ -270,10 +276,10 @@ export class UserSyncroniser {
         }
 
         const oldAvatarUrl = remoteUser.avatarurl;
-        if (oldAvatarUrl !== discordUser.avatarURL()) {
+        if (oldAvatarUrl !== discordUser.displayAvatarURL()) {
             log.verbose(`User ${discordUser.id} avatarurl should be updated`);
             if (discordUser.avatar) {
-                userState.avatarUrl = discordUser.avatarURL();
+                userState.avatarUrl = discordUser.displayAvatarURL();
                 userState.avatarId = discordUser.avatar;
             } else {
                 userState.removeAvatar = true;
@@ -285,6 +291,7 @@ export class UserSyncroniser {
 
     public async GetUserStateForGuildMember(
         newMember: GuildMember,
+        oldMember?: GuildMember | null
     ): Promise<IGuildMemberState> {
         const name = Util.ApplyPatternString(this.config.ghosts.nickPattern, {
             id: newMember.user.id,
@@ -305,6 +312,24 @@ export class UserSyncroniser {
             }; }),
             username: newMember.user.tag,
         });
+        if (newMember.avatar) {
+            guildState.avatarUrl = newMember.displayAvatarURL();
+            guildState.avatarId = newMember.avatar;
+
+            if (oldMember && oldMember?.avatar !== newMember.avatar) {
+                log.verbose(`Updating avatar_url for ${guildState.mxUserId} in guild ${newMember.guild.id} to "${guildState.avatarUrl}"`);
+                const data = await Util.DownloadFile(guildState.avatarUrl);
+                const intent = this.bridge.getIntentForUserId(guildState.mxUserId);
+                const avatarMxc = await intent.underlyingClient.uploadContent(
+                    data.buffer,
+                    data.mimeType,
+                    guildState.avatarId,
+                );
+                guildState.avatarurlMxc = avatarMxc;
+            }
+
+
+        }
         return guildState;
     }
 
@@ -332,7 +357,7 @@ export class UserSyncroniser {
 
     public async OnAddGuildMember(member: GuildMember) {
         log.info(`Joining ${member.id} to all rooms for guild ${member.guild.id}`);
-        await this.OnUpdateGuildMember(member, true, false);
+        await this.OnUpdateGuildMember(null, member, true, false);
     }
 
     public async OnRemoveGuildMember(member: GuildMember) {
@@ -347,9 +372,9 @@ export class UserSyncroniser {
         );
     }
 
-    public async OnUpdateGuildMember(member: GuildMember, doJoin: boolean = false, useCache: boolean = true) {
+    public async OnUpdateGuildMember(oldMember: GuildMember | null, member: GuildMember, doJoin: boolean = false, useCache: boolean = true) {
         log.info(`Got update for ${member.id} (${member.user.username}).`);
-        const state = await this.GetUserStateForGuildMember(member);
+        const state = await this.GetUserStateForGuildMember(member, oldMember);
         let wantRooms: string[] = [];
         try {
             wantRooms = await this.discord.GetRoomIdsFromGuild(member.guild, member, useCache);

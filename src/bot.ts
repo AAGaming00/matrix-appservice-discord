@@ -366,13 +366,13 @@ export class DiscordBot {
                 await this.userSync.OnRemoveGuildMember(member);
             } catch (err) { log.error("Exception thrown while handling \"guildMemberRemove\" event", err); }
         });
-        client.on("guildMemberUpdate", async (_, member) => {
+        client.on("guildMemberUpdate", async (oldMember, member) => {
             try {
                 if (member.partial) {
                     log.warn(`Ignoring update for ${member.guild.id} ${member.id}. User was partial.`);
                     return;
                 }
-                await this.userSync.OnUpdateGuildMember(member);
+                await this.userSync.OnUpdateGuildMember(oldMember.partial ? null : oldMember, member);
             } catch (err) { log.error("Exception thrown while handling \"guildMemberUpdate\" event", err); }
         });
         client.on("debug", (msg) => { jsLog.verbose(msg); });
