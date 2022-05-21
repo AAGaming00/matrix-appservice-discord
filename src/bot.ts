@@ -14,22 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import * as Discord from "better-discord.js";
-import { Appservice, Intent } from "matrix-bot-sdk";
-import { IDiscordMessageParserResult } from "matrix-discord-parser";
-import * as mime from "mime";
-import { ChannelSyncroniser } from "./channelsyncroniser";
-import { DiscordClientFactory } from "./clientfactory";
 import { DiscordBridgeConfig } from "./config";
+import { DiscordClientFactory } from "./clientfactory";
+import { DiscordStore } from "./store";
 import { DbEmoji } from "./db/dbdataemoji";
 import { DbEvent } from "./db/dbdataevent";
-import { DiscordCommandHandler } from "./discordcommandhandler";
 import { DiscordMessageProcessor } from "./discordmessageprocessor";
-import { Log } from "./log";
-import { IMatrixEventProcessorResult, MatrixEventProcessor, MatrixEventProcessorOpts } from "./matrixeventprocessor";
-import { MatrixRoomHandler } from "./matrixroomhandler";
-import { IMatrixEvent, IMatrixMediaInfo, IMatrixMessage } from "./matrixtypes";
-import { MetricPeg } from "./metrics";
+import { IDiscordMessageParserResult } from "matrix-discord-parser";
+import { MatrixEventProcessor, MatrixEventProcessorOpts, IMatrixEventProcessorResult } from "./matrixeventprocessor";
 import { PresenceHandler } from "./presencehandler";
 import { Provisioner } from "./provisioner";
 import { UserSyncroniser } from "./usersyncroniser";
@@ -42,9 +34,7 @@ import { IMatrixEvent, IMatrixMediaInfo, IMatrixMessage } from "./matrixtypes";
 import { Appservice, Intent, MatrixClient } from "matrix-bot-sdk";
 import { DiscordCommandHandler } from "./discordcommandhandler";
 import { MetricPeg } from "./metrics";
-import { DiscordStore } from "./store";
 import { Lock } from "./structures/lock";
-import { UserSyncroniser } from "./usersyncroniser";
 import { Util } from "./util";
 import { BridgeBlocker, UserActivityState, UserActivityTracker } from "matrix-appservice-bridge";
 
@@ -991,6 +981,9 @@ export class DiscordBot {
         }
         if (embedSet.replyEmbed) {
             embeds.push(embedSet.replyEmbed);
+        }
+        if (embedSet.messageEmbed) {
+            embeds.push(embedSet.messageEmbed);
         }
         return embeds;
     }
