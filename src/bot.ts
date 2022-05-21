@@ -982,9 +982,6 @@ export class DiscordBot {
         if (embedSet.replyEmbed) {
             embeds.push(embedSet.replyEmbed);
         }
-        if (embedSet.messageEmbed) {
-            embeds.push(embedSet.messageEmbed);
-        }
         return embeds;
     }
 
