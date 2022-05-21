@@ -341,7 +341,7 @@ export class DiscordBot {
 
         client.on("userUpdate", async (_, user) => {
             try {
-                if (!(user instanceof Discord.User)) {
+                if (user.partial) {
                     log.warn(`Ignoring update for ${user.username}. User was partial.`);
                     return;
                 }
@@ -350,7 +350,7 @@ export class DiscordBot {
         });
         client.on("guildMemberAdd", async (member) => {
             try {
-                if (!(member instanceof Discord.GuildMember)) {
+                if (member.partial) {
                     log.warn(`Ignoring update for ${member.guild.id} ${member.id}. User was partial.`);
                     return;
                 }
@@ -359,7 +359,7 @@ export class DiscordBot {
         });
         client.on("guildMemberRemove", async (member) =>  {
             try {
-                if (!(member instanceof Discord.GuildMember)) {
+                if (member.partial) {
                     log.warn(`Ignoring update for ${member.guild.id} ${member.id}. User was partial.`);
                     return;
                 }
@@ -368,7 +368,7 @@ export class DiscordBot {
         });
         client.on("guildMemberUpdate", async (_, member) => {
             try {
-                if (!(member instanceof Discord.GuildMember)) {
+                if (member.partial) {
                     log.warn(`Ignoring update for ${member.guild.id} ${member.id}. User was partial.`);
                     return;
                 }
