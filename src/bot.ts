@@ -1208,7 +1208,7 @@ export class DiscordBot {
                     await afterSend(res);
                 } catch (e) {
                     if (e.errcode !== "M_FORBIDDEN" && e.errcode !==  "M_GUEST_ACCESS_FORBIDDEN") {
-                        log.error("Failed to send message into room.", e);
+                        log.error(`Failed to send message into room (${e.errcode}).`)//, e);
                         return;
                     }
                     if (msg.member && !msg.webhookID) {
