@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import { User, GuildMember } from "better-discord.js";
+import { User, GuildMember, ImageURLOptions } from "better-discord.js";
 import { DiscordBot } from "./bot";
 import { Util } from "./util";
 import { DiscordBridgeConfig } from "./config";
@@ -45,7 +45,7 @@ const DEFAULT_GUILD_STATE = {
     roles: [],
 };
 
-const IMAGE_OPTS = {
+const IMAGE_OPTS: ImageURLOptions = {
     format: "webp",
     size: 1024
 };
