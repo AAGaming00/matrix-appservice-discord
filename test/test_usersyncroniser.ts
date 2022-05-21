@@ -593,7 +593,7 @@ describe("UserSyncroniser", () => {
                 "username",
                 guild,
                 "FiddleDee");
-            await userSync.OnUpdateGuildMember(newMember as any);
+            await userSync.OnUpdateGuildMember(null, newMember as any);
             expect(bridge.getIntentForUserId("@_discord_123456:localhost")
                 .underlyingClient.wasCalled("sendStateEvent")).to.equal(GUILD_ROOM_IDS.length);
         });
@@ -608,7 +608,7 @@ describe("UserSyncroniser", () => {
                 guild,
                 "FiddleDee");
             newMember.roles.cache.set("1234", role);
-            await userSync.OnUpdateGuildMember(newMember as any);
+            await userSync.OnUpdateGuildMember(null, newMember as any);
             expect(bridge.getIntentForUserId("@_discord_123456:localhost")
                 .underlyingClient.wasCalled("sendStateEvent")).to.equal(GUILD_ROOM_IDS_WITH_ROLE.length);
             expect(bridge.getIntentForUserId("@_discord_123456:localhost")
