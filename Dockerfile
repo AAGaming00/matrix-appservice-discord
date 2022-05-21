@@ -3,7 +3,7 @@ COPY . /tmp/src
 # install some dependencies needed for the build process
 RUN apk add --no-cache -t build-deps make gcc g++ python3 ca-certificates libc-dev wget git
 RUN cd /tmp/src \
-    && git config --global url.https://github.com/.insteadOf git://github.com/
+    && git config --global url.https://github.com/.insteadOf git://github.com/ \
     && yarn
 
 FROM node:14-alpine
