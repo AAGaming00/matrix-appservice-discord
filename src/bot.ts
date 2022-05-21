@@ -610,7 +610,7 @@ export class DiscordBot {
         }
         try {
             this.channelLock.set(chan.id);
-            const embeds = this.prepareEmbedSetWebhook(embedSet);
+            const embeds = this.prepareEmbedSetWebhook(embedSet).concat(oldMsg.embeds);
             const embed = embedSet.messageEmbed;
             const content = embed.description;
             msg = await hook.editMessage(
