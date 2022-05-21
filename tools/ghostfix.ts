@@ -84,7 +84,7 @@ async function run() {
     const client = await discordbot.ClientFactory.getClient();
 
     const promiseList: Promise<void>[] = [];
-    let curDelay = config.limits.roomGhostJoinDelay;
+    let curDelay = 100;
     try {
         client.guilds.cache.forEach((guild) => {
             guild.members.cache.forEach((member) => {
@@ -93,26 +93,26 @@ async function run() {
                 }
                 promiseList.push((async () => {
                     await Util.DelayedPromise(curDelay);
-                    let currentSchedule = JOIN_ROOM_SCHEDULE[0];
+                    // let currentSchedule = JOIN_ROOM_SCHEDULE[0];
                     const doJoin = async () => {
-                        await Util.DelayedPromise(currentSchedule);
+                        // await Util.DelayedPromise(currentSchedule);
                         await discordbot.UserSyncroniser.OnUpdateGuildMember({ avatar: "FAKE" } as GuildMember, member, true, false);
                     };
                     const errorHandler = async (err) => {
                         log.error(`Error joining rooms for ${member.id}`);
                         log.error(err);
-                        const idx = JOIN_ROOM_SCHEDULE.indexOf(currentSchedule);
-                        if (idx === JOIN_ROOM_SCHEDULE.length - 1) {
-                            log.warn(`Cannot join rooms for ${member.id}`);
-                            throw new Error(err);
-                        } else {
-                            currentSchedule = JOIN_ROOM_SCHEDULE[idx + 1];
+                        // const idx = JOIN_ROOM_SCHEDULE.indexOf(currentSchedule);
+                        // if (idx === JOIN_ROOM_SCHEDULE.length - 1) {
+                        //     log.warn(`Cannot join rooms for ${member.id}`);
+                        //     throw new Error(err);
+                        // } else {
+                            // currentSchedule = JOIN_ROOM_SCHEDULE[idx + 1];
                             try {
                                 await doJoin();
                             } catch (e) {
                                 await errorHandler(e);
                             }
-                        }
+                        // }
                     };
                     try {
                         await doJoin();
@@ -120,7 +120,7 @@ async function run() {
                         await errorHandler(e);
                     }
                 })());
-                curDelay += config.limits.roomGhostJoinDelay;
+                curDelay += 100;
             });
         });
 
