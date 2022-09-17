@@ -67,9 +67,9 @@ export interface IGuildMemberRole {
 }
 
 export interface IGuildMemberState {
-    avatarId: string | null;
-    avatarUrl: string | null;
-    avatarurlMxc: string | null;
+    avatarId?: string | null;
+    avatarUrl?: string | null;
+    avatarurlMxc?: string | null;
     bot: boolean;
     displayColor?: number;
     displayName: string;
@@ -316,9 +316,6 @@ export class UserSyncroniser {
                 position: role.position,
             }; }),
             username: newMember.user.tag,
-            avatarId: null,
-            avatarUrl: null,
-            avatarurlMxc: null
         });
         if (newMember.avatar) {
             guildState.avatarUrl = newMember.avatarURL(IMAGE_OPTS);
