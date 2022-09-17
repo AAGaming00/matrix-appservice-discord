@@ -316,6 +316,9 @@ export class UserSyncroniser {
                 position: role.position,
             }; }),
             username: newMember.user.tag,
+            avatarId: null,
+            avatarUrl: null,
+            avatarurlMxc: null
         });
         if (newMember.avatar) {
             guildState.avatarUrl = newMember.avatarURL(IMAGE_OPTS);
